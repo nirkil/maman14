@@ -1,10 +1,13 @@
 #ifndef _GLOBALS_
 #define _GLOBALS_
 
-#define MAX_LINE_LENGTH 80 /* Maximum length of a single source line  */
+#define MAX_LINE_LENGTH 81 /* Maximum length of a single source line  */
 
-#define IC_INT_VALUE 100 /**Initial IC value */
+#define IC_INT_VALUE 100 /*Initial IC value */
 
+typedef enum booleans {/* oolean T/F definition */
+	FALSE = 0, TRUE = 1
+} bool;
 
 typedef enum opcodes { /* Commands opcode */
 	
@@ -69,3 +72,18 @@ typedef enum registers {/* Registers */
     R15,
 	NONE_REG = -1
 } reg;
+
+
+typedef enum addressing_types { /* Operand addressing type */
+	
+	IMMEDIATE_ADDR = 0,/** Immediate addressing (0) */
+	
+	DIRECT_ADDR = 1,/** Direct addressing (1) */
+	
+	INDEX_ADDR = 2,/** index addressing (2) */
+
+	REGISTER_ADDR = 3, 	/** Register addressing */
+	
+	NONE_ADDR = -1 /** Failed/Not detected addressing */
+} addressing_type;
+
