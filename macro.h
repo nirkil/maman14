@@ -1,7 +1,7 @@
 
 #define MACRO_OPEN "macro"
 #define MACRO_CLOSE "endm"
-#define MAX_LINE_LENGTH 8
+#define MAX_LINE_LENGTH 80
 #define ADDED_LINE_LENGTH 2
 #define COL_AMMOUNT 2
 
