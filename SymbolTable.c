@@ -50,17 +50,6 @@ table filter_table_by_type(table tab, symbol_type type) { /* For each entry divs
 	return new_table; /* It holds a pointer to the first entry*/
 }
 
-int checkExist(table tab, char *key)
-{	
-	while(tab)
-	{
-		if(strcmp(tab->key,key) == 0)
-			return 1;
-		tab = tab->next;		
-	}
-	return 0;
-}
-
 void free_table(table tab) {
 	table prev_entry, curr_entry = tab;
 	while (curr_entry != NULL) {
