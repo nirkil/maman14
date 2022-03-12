@@ -17,8 +17,8 @@ struct macro_table{
 
 
 
-/*creates table and returns table pointer*/
-struct macro_table* create_table(int row_ammount);
+/*creates table and returns pointer to an empty table*/
+struct macro_table* create_table();
 
 /*adds new empty row to given table*/
 void add_row_to_table(struct macro_table *table);
