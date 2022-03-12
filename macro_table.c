@@ -121,7 +121,7 @@ int search_table_for_value(struct macro_table *table, char *value) {
 
 	while (current->next != NULL) {
 		current = current->next;
-		if (strcmp(value, current->row_structure[0]) == 1) {
+		if (strcmp(value, current->row_structure[0]) == 0) {
 			return row_num;
 		}
 	}

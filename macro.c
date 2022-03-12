@@ -11,12 +11,15 @@ int main(void) {
 	FILE *output_file;
 	/*	input_file=fopen("D:\\TENLINES. TXT","w");*/
 	input_file = fopen("txt.TXT", "r");
-	output_file = fopen("D:\\2out.TXT", "w");
+	output_file = fopen("D:\\3out.TXT", "w");
 	if (input_file == NULL) {
 		fprintf(stderr, "Couldn't open\n");
 	}
 
 	handle_file(input_file, output_file);
+
+	fclose(input_file);
+	fclose(output_file);
 
 	return 1;
 }
@@ -26,8 +29,7 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 	struct macro_table* macro_t;
 	char *word;
 	char line[MAX_LINE_LENGTH + ADDED_LINE_LENGTH];
-	char line_copy1[MAX_LINE_LENGTH + ADDED_LINE_LENGTH];
-	char line_copy2[MAX_LINE_LENGTH + ADDED_LINE_LENGTH];
+	char line_copy[MAX_LINE_LENGTH + ADDED_LINE_LENGTH];
 	char *macro_name;
 	char macro_def[MAX_CELL_LENGTH];
 
@@ -40,10 +42,11 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 
 			check_line_length(input_file, line);
 
-			strcpy(line_copy1, line);
+			strcpy(line_copy, line);
+
 
 			if (line[0] != ';' && line[0] != '\n') { /*ignore comments: ; and empty lines*/
-				word = strtok(line_copy1, " \t");
+				word = strtok(line_copy, " \t");
 
 				while (word != NULL) {
 
@@ -52,7 +55,7 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 						macro_flag = 1;
 						printf("here the macro start: %s", line); /*TODO: remove*/
 						macro_name = find_macro_name(line); /*returns the next word after macro open*/
-						continue;
+						break;
 					}
 
 					else if (macro_flag == 0) { /*compare to macro table*/
@@ -60,7 +63,8 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 						if (search_macro_name(macro_t, word) != NULL) {/* return NULL only if word is not a macro name else returns macro's def*/
 							strcpy(macro_def, search_macro_name(macro_t, word));
 							add_to_new_file(new_file, macro_def);
-							continue;
+							line[0] = '\0';
+							break;
 						}
 					}
 
@@ -69,18 +73,14 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 						if (is_it_macro_def_close(line)) { /*when macro def ends*/
 							printf("here the macro ends: %s", line); /*TODO: remove*/
 
-							if (strtok(line_copy2, "endm") != NULL) {
-								strcat(macro_def, line);
-							}
-
 							add_def_to_macro_table(macro_t, macro_name,
 									macro_def);
 							add_to_new_file(new_file, macro_def);
 							printf("this is the macro def: %s", search_macro_name(macro_t, macro_name)); /*TODO: remove*/
 							macro_flag = 0;
+							break;
 
-							continue;
-						} else if (!is_it_macro_def_close(line)) {
+						} else {
 							strcat(macro_def, line);
 						}
 					}
@@ -111,7 +111,7 @@ void check_line_length(FILE *input_file, char *line) {
 }
 
 void add_to_new_file(FILE *new_file, char *s) {
-	fprintf(new_file, "%s\n", s);
+	fprintf(new_file, "%s", s);
 }
 
 void add_def_to_macro_table(struct macro_table *macro_t, char *macro_name,
@@ -119,8 +119,8 @@ void add_def_to_macro_table(struct macro_table *macro_t, char *macro_name,
 	int row_num;
 	add_row_to_table(macro_t);
 	row_num = macro_t->row_ammount;
-	set_cel_value(macro_t, row_num - 1, 0, macro_name);
-	set_cel_value(macro_t, row_num - 1, 1, macro_def);
+	set_cel_value(macro_t, row_num, 1, macro_name);
+	set_cel_value(macro_t, row_num, 2, macro_def);
 }
 
 char* find_macro_name(char *s) {
@@ -156,7 +156,7 @@ char* search_macro_name(struct macro_table *macro_t, char *macro_name) {
 	if (row_num == -1) {
 		macro_def = NULL;
 	} else {
-		macro_def = get_cel_value(macro_t, row_num, 1);
+		macro_def = get_cel_value(macro_t, row_num, 2);
 	}
 
 	return macro_def;
@@ -170,8 +170,11 @@ int is_it_macro_def_open(char *word) {
 }
 
 int is_it_macro_def_close(char *line) {
+	char line_copy[MAX_LINE_LENGTH + ADDED_LINE_LENGTH];
 	char *word;
-	word = strtok(line, " \t\n");
+
+	strcpy(line_copy, line);
+	word = strtok(line_copy, " \t\n");
 	while (word != NULL) {
 		if (strcmp(word, MACRO_CLOSE) == 0) {
 			return 1;
