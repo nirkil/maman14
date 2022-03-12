@@ -5,16 +5,6 @@
 #include <stdarg.h>
 #include "utils.h"
 
-	
-	skip_white(line.content, i) /* Skip white chars  */
-	{ 
-        while(string[i]!='\0')
-     {
-          if(string[i] == ' ')
-              i++;
-	 }
-	}
-
 	bool alphanumeric_str(char *string) { /*check for every char in string if it is non alphanumeric */
 	int i;
 	for (i = 0; string[i]; i++) {
@@ -27,7 +17,7 @@
 	return name[0] && strlen(name) <= 31 && isalpha(name[0]) && alphanumeric_str(name + 1) && !checkExist(table tab, char *key);
 }
 
-bool checkExist(table tab, char *key)
+bool checkExist(table tab, char *key)/*check if a key exist in the table already*/ 
 {	
 	while(tab)
 	{
@@ -44,7 +34,7 @@ bool find_label(line_info line, char *symbol_dest) {
 	int j, i;
 	i = j = 0;
 
-	skip_white(line.content, i)/* Skip white chars at the beginning anyway */
+	SKIP_WHITE(line.content, i)/* Skip white chars at the beginning anyway */
   
 	/* Let's allocate some memory to the string needed to be returned */
 	while (line.content[i] != ':' && line.content[i] != EOF && i <= 80) 
@@ -87,30 +77,6 @@ void *malloc_with_check(long size) {
     fprintf(stderr, "\n");
 	return result;
 } 
-
-struct attributes_lookup_item {
-	char *name;
-	attributes value;
-};
-
-static struct attributes_lookup_item
-		attributes_lookup_table[] = {
-		{"string", STRING_INST},
-		{"data",   DATA_INST},
-		{"entry",  ENTRY_INST},
-		{"extern", EXTERN_INST},
-		{NULL, NONE_ADDR}
-};
-
-attributes find_attributes_by_name(char *name) { /* recognize atrribute type*/ 
-	struct instruction_lookup_item *curr_item;
-	for (curr_item = attributes_lookup_table; curr_item->name != NULL; curr_item++) {
-		if (strcmp(curr_item->name, name) == 0) {
-			return curr_item->value;
-		}
-	}
-	return NONE_ADDR;
-}
 
 bool check_int(char *string) {
 	int i = 0;
