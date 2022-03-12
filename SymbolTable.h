@@ -31,6 +31,5 @@ void free_table(table tab); /*Deallocates all the memory required by the table.*
 
 table filter_table_by_type(table tab, symbol_type type); /* Returns all the entries by their type in a new table*/
 
-int checkExist(table tab, char *key);/*check if the symbol is already exist in the table*/
 
 #endif
