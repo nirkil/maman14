@@ -35,6 +35,5 @@ int search_table_for_value(struct macro_table *table, char *value);
 /*deletes table*/
 void destroy_table(struct macro_table *table);
 
-void print_table(struct macro_table *table);
 
 #endif
