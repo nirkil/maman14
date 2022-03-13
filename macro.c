@@ -6,24 +6,6 @@
 
 void check_line_length(FILE *input_file, char *line);
 
-int main(void) {
-	FILE *input_file;
-	FILE *output_file;
-	/*	input_file=fopen("D:\\TENLINES. TXT","w");*/
-	input_file = fopen("txt.TXT", "r");
-	output_file = fopen("D:\\3out.TXT", "w");
-	if (input_file == NULL) {
-		fprintf(stderr, "Couldn't open\n");
-	}
-
-	handle_file(input_file, output_file);
-
-	fclose(input_file);
-	fclose(output_file);
-
-	return 1;
-}
-
 FILE* handle_file(FILE *input_file, FILE *new_file) {
 
 	struct macro_table* macro_t;
@@ -32,8 +14,6 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 	char line_copy[MAX_LINE_LENGTH + ADDED_LINE_LENGTH];
 	char *macro_name;
 	char macro_def[MAX_CELL_LENGTH];
-
-/*	memset(macro_def, ' ', 10);*/
 
 	macro_t = create_table(1);
 
@@ -53,7 +33,6 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 					if (macro_flag == 0 && is_it_macro_def_open(word)) { /*compare to MACRO_OPEN*/
 						macro_def[0] =  '\0';
 						macro_flag = 1;
-						printf("here the macro start: %s", line); /*TODO: remove*/
 						macro_name = find_macro_name(line); /*returns the next word after macro open*/
 						break;
 					}
@@ -71,12 +50,9 @@ FILE* handle_file(FILE *input_file, FILE *new_file) {
 					if (macro_flag && !(is_it_macro_def_open(word))
 							&& strcmp(word, macro_name) != 0) { /**/
 						if (is_it_macro_def_close(line)) { /*when macro def ends*/
-							printf("here the macro ends: %s", line); /*TODO: remove*/
-
 							add_def_to_macro_table(macro_t, macro_name,
 									macro_def);
 							add_to_new_file(new_file, macro_def);
-							printf("this is the macro def: %s", search_macro_name(macro_t, macro_name)); /*TODO: remove*/
 							macro_flag = 0;
 							break;
 
@@ -184,7 +160,5 @@ int is_it_macro_def_close(char *line) {
 	return 0;
 }
 
-int is_macro_flag(int bool) { /*todo: make*/
-	return bool;
-}
+
 
