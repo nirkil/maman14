@@ -2,36 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "macro_table.h"
-/*
- int main(void) {
- char *val = "hello";
- char *word = "123hfhdskaieerhgstr";
- char *get_val;
- int location;
- struct macro_table* t1;
- t1 = create_table(3);
- set_cel_value(t1, 1, 1, val);
- set_cel_value(t1, 1, 2, val);
- set_cel_value(t1, 2, 1, val);
- set_cel_value(t1, 2, 2, val);
- set_cel_value(t1, 3, 1, word);
- set_cel_value(t1, 3, 2, val);
- add_row_to_table(t1);
- set_cel_value(t1, 4, 1, val);
- set_cel_value(t1, 4, 2, val);
- print_table(t1);
- get_val = get_cel_value(t1, 4, 1);
- printf("the cell value is: %s\n", get_val);
- location = search_table_for_value(t1, get_val);
- printf("the value row num: %d\n", location);
- printf("finish\n");
- destroy_table(t1);
- printf("table destroyed");
- print_table(t1);
-
- return EXIT_SUCCESS;
- }
- */
 
 struct macro_table* create_table() {
 
@@ -143,15 +113,3 @@ void destroy_table(struct macro_table *table) {
 
 	table->head = NULL;
 }
-/*
-void print_table(struct macro_table *table) {
-	struct table_row *current = (struct table_row*) malloc(
-			sizeof(struct table_row));
-	current = table->head;
-	while (current != NULL) {
-		printf("%s | %s\n", &current->row_structure[0],
-				&current->row_structure[1]);
-		current = current->next;
-	}
-
-} TODO: remove*/
