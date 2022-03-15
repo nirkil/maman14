@@ -3,7 +3,8 @@
 #define SymbolTable
 
 
-typedef enum symbol_type {/* The symbol type */
+typedef enum symbol_type
+{/* The symbol type */
 	code_symbol,
 	data_symbol,
 	external_symbol,
@@ -15,12 +16,12 @@ typedef enum symbol_type {/* The symbol type */
 typedef struct row* table;/*pointer to table row  */
 
 typedef struct row {/* A single table line */
-    
-	char *key;/* Key (symbol name) is a string */
+{
+    char *key;/* Key (symbol name) is a string */
     long value;/*Address of the symbol */
     long baseadress; /* Address of the baseadress of the symbol*/
     long offset; /* Address of the offset */
-	symbol_type type;	/* Symbol type */
+    symbol_type type;	/* Symbol type */
     table next;/* Next row in the table of the symbol*/
 
 } table_row;
