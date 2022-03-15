@@ -98,3 +98,33 @@ bool process_line_fpass(line_info line, long *IC, long *DC, machine_word **code_
 	}
   return TRUE;
 }
+	static bool process_code(line_info line, int i, long *ic, machine_code **code_img) 
+{
+	char operation[8]; /* stores the string of the current code instruction */
+	char *operands[2]; /* 2 strings, each for operand */
+	opcode curr_opcode; /* the current opcode and funct values */
+	funct curr_funct;
+    first_line_code *first_line_code;
+	second_line_code *second_line_code;
+	long ic_before;
+	int j, operand_count;
+	machine_code *code_to_write;
+	 
+	SKIP_WHITE(line.content, i)
+
+	/* Until white char, end of line, or too big instruction, copy it: */
+	for (j = 0; line.content[i] && line.content[i] != '\t' && line.content[i] != ' ' && line.content[i] != '\n' && line.content[i] != EOF && j < 6; i++, j++) {
+		operation[j] = line.content[i];
+	}
+	operation[j] = '\0'; /* End of string */
+	/* Get opcode & funct by command name into curr_opcode/curr_funct */
+	get_opcode_func(operation, &curr_opcode, &curr_funct);
+    if (curr_opcode == NONE_OP) { /* check if invalid operation */
+		printf_line_error(line, "Unrecognized instruction: %s.", operation);
+		return FALSE; /* an error occurred */
+
+	if (!analyze_operands(line, i, operands, &operand_count, operation))
+	  { /* Separate operands and get their count */
+		return FALSE;
+	}
+
