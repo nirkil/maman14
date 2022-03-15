@@ -26,4 +26,5 @@ attribute find_attribute_by_name(char *name) { /* recognize atrribute type and r
 
 void free_code_image(machine_code **code_image, long IC); /* Frees all the dynamically-allocated memory for the code image.*/
 
+#endif
 
