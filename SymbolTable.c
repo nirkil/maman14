@@ -10,7 +10,7 @@ void add_table_item(char *key,long value,long baseadress ,long offset, symbol_ty
    char *temp_key;
    table prev_entry, curr_entry, new_entry;
    
-   new_entry = (table) malloc_with_check(sizeof(table_entry)); /* allocate memory for new entry */
+   new_entry = (table) malloc_with_check(sizeof(table_row)); /* allocate memory for new entry */
    temp_key = (char *) malloc_with_check(strlen(key) + 1);/* Prevent "Aliasing" of pointers.*/
    strcpy(temp_key, key);
 
@@ -40,19 +40,25 @@ void add_table_item(char *key,long value,long baseadress ,long offset, symbol_ty
 	prev_entry->next = new_entry;
 }
 
-table filter_table_by_type(table tab, symbol_type type) { /* For each entry divsion insert to the new table. */
+table filter_table_by_type(table tab, symbol_type type) 
+{ /* For each entry divsion insert to the new table. */
 	table new_table = NULL;
-	do {
-		if (tab->type == type) {
+	do 
+	{
+		if (tab->type == type) 
+		{
 			add_table_item(tab->key,tab->value,tab->baseadress ,tab->offset, tab->type, &new_table);
 		}
 	} while ((tab = tab->next) != NULL);
+	
 	return new_table; /* It holds a pointer to the first entry*/
 }
 
-void free_table(table tab) {
+void free_table(table tab) /*Deallocates all the memory required by the table.*/
+{
 	table prev_entry, curr_entry = tab;
-	while (curr_entry != NULL) {
+	while (curr_entry != NULL) 
+	{
 		prev_entry = curr_entry;
 		curr_entry = curr_entry->next;
 		free(prev_entry->key); 
