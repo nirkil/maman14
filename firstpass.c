@@ -5,9 +5,9 @@
 #include "utils.h"
 #include "SymbolTable.h"
 
-static bool process_code(line_info line, int i, long *ic, machine_word **code_img);/* Processes a single code line in the first pass*/
+static bool process_code(line_info line, int i, long *ic, machine_code **code_img);/* Processes a single code line in the first pass*/
 
-bool process_line_fpass(line_info line, long *IC, long *DC, machine_word **code_img, long *data_img,  table *symbol_table) 
+bool process_line_fpass(line_info line, long *IC, long *DC, machine_code **code_img, long *data_img,  table *symbol_table) 
 {  /* Processes a single line in the first pass*/
   int i, j,baseadress,offset;
     attribute attribute; 
