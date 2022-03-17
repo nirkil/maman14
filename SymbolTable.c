@@ -66,6 +66,17 @@ void free_table(table tab) /*Deallocates all the memory required by the table.*/
 	}
 }
 
+void add_value_to_type(table tab, long to_add, symbol_type type) 
+{
+	table curr_entry;
+	for (curr_entry = tab; curr_entry != NULL; curr_entry = curr_entry->next) 
+	{
+		if (curr_entry->type == type) 
+		{
+			curr_entry->value += to_add;
+		}
+	}
+}
 
 
 
