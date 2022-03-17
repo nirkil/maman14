@@ -14,8 +14,8 @@ static bool process_file(char *filename) {
 
 	FILE *fd; /* Current assembly file descriptor to process after the first pass of macros*/
 
-	long data_img[CODE_ARR_IMG_LENGTH]; /* Contains an image of the machine code ???*/
-	machine_word *code_img[CODE_ARR_IMG_LENGTH];/*?????* /
+	long data_img[8191]; /* Contains an image of the machine code ???*/
+	machine_בםגק *code_img[8191];
 	
 	table symbol_table = NULL; /* The symbol table */
 	line_info curr_line_info;
