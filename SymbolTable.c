@@ -1,85 +1,38 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include "SymbolTable.h"
-#include "utils.h"
+/* A dynamically-allocated symbol table */
+#ifndef StmbolTable
+#define SymbolTable
 
-void add_table_item(char *key,long value,long baseadress ,long offset, symbol_type type,table *tab);
-{  
-   char *temp_key;
-   table prev_entry, curr_entry, new_entry;
-   
-   new_entry = (table) malloc_with_check(sizeof(table_row)); /* allocate memory for new entry */
-   temp_key = (char *) malloc_with_check(strlen(key) + 1);/* Prevent "Aliasing" of pointers.*/
-   strcpy(temp_key, key);
 
-    new_entry->key = temp_key;
-    new_entry->value = value;
-    new_entry->baseadress = baseadress;
-    new_entry->offset = offset;
-    new_entry->type = type;
+typedef enum symbol_type
+{/* The symbol type */
+	code_symbol,
+	data_symbol,
+	external_symbol,
+	external_refernce,/*Address that contains a reference to (a usage of) external symbol */
+	entry_symbol
+} symbol_type;
 
-    if ((*tab) == NULL ) /* if the table's null, set the new entry as the head. */
-	{ 
-		new_entry->next = (*tab);
-		(*tab) = new_entry;
-		return;
 
-	}
+typedef struct row* table;/*pointer to table row  */
 
-    curr_entry = (*tab)->next; /* Insert the new table entry, keeping it sorted */
-	prev_entry = *tab;
-	while (curr_entry != NULL && curr_entry->value < value)
-   {
-		prev_entry = curr_entry;
-		curr_entry = curr_entry->next;
-	}
-
-	new_entry->next = curr_entry;
-	prev_entry->next = new_entry;
-}
-
-table filter_table_by_type(table tab, symbol_type type) 
-{ /* For each entry divsion insert to the new table. */
-	table new_table = NULL;
-	do 
-	{
-		if (tab->type == type) 
-		{
-			add_table_item(tab->key,tab->value,tab->baseadress ,tab->offset, tab->type, &new_table);
-		}
-	} while ((tab = tab->next) != NULL);
-	
-	return new_table; /* It holds a pointer to the first entry*/
-}
-
-void free_table(table tab) /*Deallocates all the memory required by the table.*/
+typedef struct row {/* A single table line */
 {
-	table prev_entry, curr_entry = tab;
-	while (curr_entry != NULL) 
-	{
-		prev_entry = curr_entry;
-		curr_entry = curr_entry->next;
-		free(prev_entry->key); 
-		free(prev_entry);
-	}
-}
+    
+	char *key;/* Key (symbol name) is a string */
+    long value;/*Address of the symbol */
+    long baseadress; /* Address of the baseadress of the symbol*/
+    long offset; /* Address of the offset */
+	symbol_type type;	/* Symbol type */
+    table next;/* Next row in the table of the symbol*/
 
-void add_value_to_type(table tab, long to_add, symbol_type type) 
-{
-	table curr_entry;
-	for (curr_entry = tab; curr_entry != NULL; curr_entry = curr_entry->next) 
-	{
-		if (curr_entry->type == type) 
-		{
-			curr_entry->value += to_add;
-		}
-	}
-}
+} table_row;
 
+void add_table_item(char *key,long value,long baseadress ,long offset, symbol_type type,table *tab); /*Adds an item to the table, keeping it sorted.*/
 
+void free_table(table tab); /*Deallocates all the memory required by the table.*/
 
-	
-	
+table filter_table_by_type(table tab, symbol_type type); /* Returns all the entries by their type in a new table*/
 
+void add_value_to_type(table tab, long to_add, symbol_type type);
+
+#endif
