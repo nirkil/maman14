@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "utils.h"
 #include "SymbolTable.h"
+#include "second_pass.h"
 
 void second_pass_handle(FILE *input_file) {
 
