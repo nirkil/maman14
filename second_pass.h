@@ -3,6 +3,13 @@
 #ifndef SEC_PASS
 #define SEC_PASS
 
+
+struct ext_list { /*a list of all external symbols*/
+	char *ext_symbol;
+	long address;
+	struct ext_list *next;
+};
+
 /*operates the second pass: gets input files and creates necessary output files*/
 void second_pass_handle(FILE *input_file);
 

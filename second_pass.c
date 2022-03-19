@@ -102,8 +102,16 @@ int is_symbol(table *symbol_table, char *word){
 	return 0;
 }
 
-void complete_assembler_table(machine_code assembler_table, table symbol_table) { /*TODO: <-- */
+void complete_assembler_table(machine_code assembler_table, table symbol_table) { /*TODO: <--finnish */
+	struct ext_list ext_list;
+	char symbol[MAX_LINE_LENGTH];
+	long symbol_value;
 
+	symbol_value = find_symbol_value(symbol_table, symbol);
+
+	if(is_external(symbol_table, symbol)){ /*TODO: make function*/
+		add_to_ext_list(ext_list, symbol);
+	}
 }
 
 char* get_entry_symbol(char *line) { /*TODO: check function */
@@ -114,7 +122,7 @@ char* get_entry_symbol(char *line) { /*TODO: check function */
 	return word;
 }
 
-int is_entey(FILE input_file) { /*check if there are entries in input file*/
+int is_entry(FILE input_file) { /*check if there are entries in input file*/
 	char *word;
 	char line[MAX_LINE_LENGTH];
 
@@ -159,6 +167,22 @@ char* cut_input_file_name_ending(char *input_file_name) { /*clear '.as' ending f
 	return input_name;
 }
 
+void add_to_ext_list(struct ext_list *list, char *symbol){
+	long address;
+	struct ext_list current = (char*) malloc(sizeof(char));
+	current = list->ext_symbol;
+
+	address = culc_address(symbol); /*TODO: make function*/
+
+	while(current->next != NULL){
+		current = current->next;
+	}
+	strcpy(current->next, symbol);
+	current = current->next;
+	current->address = address;
+	current->next = NULL;
+}
+
 void fill_entries_output_file(table symbol_table, FILE *entries_output_file) {/*TODO: <-- */
 	table *current = symbol_table;
 	while (current != NULL && current->type == "entry") {/*TODO: check how it works exactly */
@@ -170,7 +194,22 @@ void fill_entries_output_file(table symbol_table, FILE *entries_output_file) {/*
 	}
 }
 
-void fill_externals_output_file(machine_code assembler_table, FILE *externals_output_file) {/*TODO: <-- */
+void fill_externals_output_file(table symbol_table, struct ext_list *list, FILE *externals_output_file) {/*TODO: <-- */
+	struct ext_list ext_list = list;
+	table symbol_t = symbol_table;
+	long base_address;
+	long offset;
+
+	while(ext_list != NULL){
+		fprintf(externals_output_file, "%s BASE ", ext_list->ext_symbol);
+		base_address = get_ext_symbol_base(ext_list->ext_symbol, symbol_t); /*TODO: make function*/
+		fprintf(externals_output_file, "%ld\n", base_address);
+		fprintf(externals_output_file, "%s OFFSET ", ext_list->ext_symbol);
+		offset = get_symbol_offset(ext_list->ext_symbol, symbol_t);  /*TODO: make function*/
+		fprintf(externals_output_file, "%ld\n", offset);
+
+		ext_list = ext_list->next;
+	}
 
 }
 
