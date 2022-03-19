@@ -109,7 +109,7 @@ void complete_assembler_table(machine_code assembler_table, table symbol_table) 
 
 	symbol_value = find_symbol_value(symbol_table, symbol);
 
-	if(is_external(symbol_table, symbol)){ /*TODO: make function*/
+	if(is_this_external(symbol_table, symbol)){ /*TODO: make function*/
 		add_to_ext_list(ext_list, symbol);
 	}
 }
