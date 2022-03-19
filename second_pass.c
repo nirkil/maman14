@@ -37,7 +37,8 @@ void second_pass_handle(FILE *input_file, machine_code assembler_table,
 				}
 
 				else {
-					complete_assembler_table(assembler_table, symbol_table, word); /*TODO: <-- */
+					complete_assembler_table(assembler_table, symbol_table,
+							word); /*TODO: <-- */
 				}
 
 				word = strtok(NULL, " \t");
@@ -91,10 +92,10 @@ void add_entry_to_symbol_table(table symbol_table, char *symbol) {
 	}
 }
 
-int is_symbol(table *symbol_table, char *word){
+int is_symbol(table *symbol_table, char *word) {
 	table *current = symbol_table;
-	while(current != NULL){
-		if(strcmp(current->key, word) == 0){
+	while (current != NULL) {
+		if (strcmp(current->key, word) == 0) {
 			return 1;
 		}
 		current = current->next;
@@ -103,15 +104,22 @@ int is_symbol(table *symbol_table, char *word){
 }
 
 void complete_assembler_table(machine_code assembler_table, table symbol_table) { /*TODO: <--finnish */
+	machine_code assembler_t = assembler_table;
+
 	struct ext_list ext_list;
+
 	char symbol[MAX_LINE_LENGTH];
 	long symbol_value;
 
-	symbol_value = find_symbol_value(symbol_table, symbol);
+	/*TODO: enter info to empty lines in assembler_t*/
 
-	if(is_this_external(symbol_table, symbol)){ /*TODO: make function*/
+	symbol_value = find_symbol_value(symbol_table, symbol); /*TODO: make function*/
+
+	if (is_this_external(symbol_table, symbol)) { /*TODO: make function*/
 		add_to_ext_list(ext_list, symbol);
 	}
+
+	/*finish*/
 }
 
 char* get_entry_symbol(char *line) { /*TODO: check function */
@@ -141,80 +149,97 @@ int is_entry(FILE input_file) { /*check if there are entries in input file*/
 	return 0;
 }
 
-int is_external(FILE input_file) { /*check if there are externals in input file*/
-	char *word;
-	char line[MAX_LINE_LENGTH];
-
-	while (feof(input_file) == 0) {
-		if (fgets(line, MAX_LINE_LENGTH, input_file) != NULL) {
-			if (line[0] != ';' && line[0] != '\n') {
-				word = strtok(line, " \t");
-				while (word != NULL) {
-					if (strcmp(word, ".entry") == 0) {
-						return 1;
-					}
-				}
-			}
+int is_this_external(table symbol_table, char *symbol) {
+	table current = symbol_table;
+	while (current != NULL && strcmp(current->key, symbol) != 0) {
+		current = current->next;
+	}
+	if (strcmp(current->key, symbol) == 0) {
+		if (current->type =) { /*TODO: check if type is external*/
+			return 1;
 		}
 	}
 	return 0;
 }
 
-char* cut_input_file_name_ending(char *input_file_name) { /*clear '.as' ending from input file name*/
-	char *input_name = (char*) malloc(sizeof(char));
-	strcpy(input_name, input_file_name);
-	strtok(input_name, ".as");
-	return input_name;
+int is_external(FILE input_file) { /*check if there are externals in input file*/
+char *word;
+char line[MAX_LINE_LENGTH];
+
+while (feof(input_file) == 0) {
+	if (fgets(line, MAX_LINE_LENGTH, input_file) != NULL) {
+		if (line[0] != ';' && line[0] != '\n') {
+			word = strtok(line, " \t");
+			while (word != NULL) {
+				if (strcmp(word, ".entry") == 0) {
+					return 1;
+				}
+			}
+		}
+	}
+}
+return 0;
 }
 
-void add_to_ext_list(struct ext_list *list, char *symbol){
-	long address;
-	struct ext_list current = (char*) malloc(sizeof(char));
-	current = list->ext_symbol;
+char* cut_input_file_name_ending(char *input_file_name) { /*clear '.as' ending from input file name*/
+char *input_name = (char*) malloc(sizeof(char));
+strcpy(input_name, input_file_name);
+strtok(input_name, ".as");
+return input_name;
+}
 
-	address = culc_address(symbol); /*TODO: make function*/
+void add_to_ext_list(struct ext_list *list, char *symbol) {
+long address;
+struct ext_list current = (char*) malloc(sizeof(char));
+current = list->ext_symbol;
 
-	while(current->next != NULL){
-		current = current->next;
-	}
-	strcpy(current->next, symbol);
+address = culc_address(symbol); /*TODO: make function*/
+
+while (current->next != NULL) {
 	current = current->next;
-	current->address = address;
-	current->next = NULL;
+}
+strcpy(current->next, symbol);
+current = current->next;
+current->address = address;
+current->next = NULL;
 }
 
 void fill_entries_output_file(table symbol_table, FILE *entries_output_file) {/*TODO: <-- */
-	table *current = symbol_table;
-	while (current != NULL && current->type == "entry") {/*TODO: check how it works exactly */
-		fprintf(entries_output_file, "%s,", current->key);
-		fprintf(entries_output_file, "%s,", current->baseadress);
-		fprintf(entries_output_file, "%s\n", current->offset);
+table *current = symbol_table;
+while (current != NULL && current->type == "entry") {/*TODO: check how it works exactly */
+	fprintf(entries_output_file, "%s,", current->key);
+	fprintf(entries_output_file, "%s,", current->baseadress);
+	fprintf(entries_output_file, "%s\n", current->offset);
 
-		current = current->next;
-	}
+	current = current->next;
+}
 }
 
-void fill_externals_output_file(table symbol_table, struct ext_list *list, FILE *externals_output_file) {/*TODO: <-- */
-	struct ext_list ext_list = list;
-	table symbol_t = symbol_table;
-	long base_address;
-	long offset;
+void fill_externals_output_file(table symbol_table, struct ext_list *list,
+	FILE *externals_output_file) {/*TODO: <-- */
+struct ext_list ext_list = list;
+table symbol_t = symbol_table;
+long base_address;
+long offset;
 
-	while(ext_list != NULL){
-		fprintf(externals_output_file, "%s BASE ", ext_list->ext_symbol);
-		base_address = get_ext_symbol_base(ext_list->ext_symbol, symbol_t); /*TODO: make function*/
-		fprintf(externals_output_file, "%ld\n", base_address);
-		fprintf(externals_output_file, "%s OFFSET ", ext_list->ext_symbol);
-		offset = get_symbol_offset(ext_list->ext_symbol, symbol_t);  /*TODO: make function*/
-		fprintf(externals_output_file, "%ld\n", offset);
+while (ext_list != NULL) {
+	fprintf(externals_output_file, "%s BASE ", ext_list->ext_symbol);
+	base_address = get_ext_symbol_base(ext_list->ext_symbol, symbol_t); /*TODO: make function*/
+	fprintf(externals_output_file, "%ld\n", base_address);
+	fprintf(externals_output_file, "%s OFFSET ", ext_list->ext_symbol);
+	offset = get_symbol_offset(ext_list->ext_symbol, symbol_t); /*TODO: make function*/
+	fprintf(externals_output_file, "%ld\n", offset);
 
-		ext_list = ext_list->next;
-	}
-
+	ext_list = ext_list->next;
 }
-
-void fill_object_output_file(machine_code assembler_table, FILE *object_output_file) {/*TODO: <-- */
 
 }
 
+void fill_object_output_file(machine_code assembler_table,
+	FILE *object_output_file) {/*TODO: <--make */
+long order_length;
+long data_length;
+
+/*A(16-19) B(12-15) C(8-11) D(4-7) E(0-3)*/
+}
 
