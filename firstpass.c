@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "globals.h"
 #include "utils.h"
 #include "SymbolTable.h"
 
@@ -98,7 +97,8 @@ bool process_line_fpass(line_info line, long *IC, long *DC, machine_code **code_
 	}
   return TRUE;
 }
-	static bool process_code(line_info line, int i, long *ic, machine_code **code_img) 
+
+static bool process_code(line_info line, int i, long *ic, machine_code **code_img) 
 {
 	char operation[8]; /* stores the string of the current code instruction */
 	char *operands[2]; /* 2 strings, each for operand */
@@ -123,8 +123,62 @@ bool process_line_fpass(line_info line, long *IC, long *DC, machine_code **code_
 		printf_line_error(line, "Unrecognized instruction: %s.", operation);
 		return FALSE; /* an error occurred */
 
-	if (!analyze_operands(line, i, operands, &operand_count, operation))
+	if (!analyze_operands(line, i, operands, &operand_count, operation))/*13*/
 	  { /* Separate operands and get their count */
 		return FALSE;
 	}
 
+	
+	/* Build machine code struct to store in code image array */
+	if ((first_line_code = get_first_line_code(line_info line, opcode curr_opcode)) == NULL) 
+	{
+		/* Release allocated memory for operands */
+		if (operands[0]) 
+		{
+			free(operands[0]);
+			if (operands[1]) 
+			{
+				free(operands[1]);
+			}
+		}
+		return FALSE;
+	}
+
+	/* ic in position of new code word */
+	ic_before = *ic;
+
+	code_to_write = (machine_code *) malloc_with_check(sizeof(machine_code));
+	code_to_write->code->first = first_line_code;
+	code_to_write->code->second = second_line_code;
+    code_img[(*ic) -  IC_INIT_VALUE] = code_to_write->code->first;
+	addressing_type operand_addressing = get_addressing_type(operand[0]);
+	if(operand_addressing != none_addr)
+	{
+	(*ic)++;
+    code_img[(*ic) -  IC_INIT_VALUE] = code_to_write->code->second;
+	}
+
+	if (operand_addressing == Immediate_addr) {
+			char *ptr;
+			/* Get value of immediate addressed operand. notice that it starts with #, so we're skipping the # in the call to strtol */
+			long value = strtol(operand + 1, &ptr, 10);
+			code_to_write = (machine_word *) malloc_with_check(sizeof(machine_word));
+			code_to_write->length = 0; /* Not Code word! */
+			code_to_write->code->data = build_data_line(Immediate_addr, value, FALSE);
+
+			code_img[(*ic) - IC_INIT_VALUE] = code_to_write;
+		}
+
+	if(/* when to skip ic for the extra line */)
+	(*ic) = (*ic)+ 2;
+
+	/* Add the final length (of code word + data words) to the code word struct: */
+	code_img[ic_before - IC_INIT_VALUE]->length = (*ic) - ic_before;
+
+	return TRUE; /* No errors */
+}
+
+
+
+
+  
